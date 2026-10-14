@@ -6,6 +6,96 @@
     <title>Document</title>
 </head>
 <body>
-    
+    {% extends "base.html" %}
+{% load ui_extras %}
+{% block title %}{{ page_title }} | مدیریت رستورانت{% endblock %}
+{% block page_heading %}{{ page_title }}{% endblock %}
+{% block content %}
+<div class="page-actions">
+    <div><p class="muted">فهرست و مدیریت اطلاعات ثبت‌شده</p></div>
+    {% if create_url %}
+        <a class="btn btn-primary" href="{% url create_url %}">＋ افزودن مورد جدید</a>
+    {% endif %}
+</div>
+
+<div class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                    <th>
+                        {% if col == "name" %}نام
+                        {% elif col == "code" %}کد
+                        {% elif col == "phone" %}شماره تماس
+                        {% elif col == "address" %}آدرس
+                        {% elif col == "is_active" %}وضعیت فعالیت
+                        {% elif col == "is_available" %}وضعیت موجودیت
+                        {% elif col == "price" %}قیمت
+                        {% elif col == "instructions" %}دستور تهیه
+                        {% elif col == "category" %}دسته‌بندی
+                        {% elif col == "description" %}توضیحات
+                        {% elif col == "title" %}عنوان
+                        {% elif col == "quantity" %}مقدار
+                        {% elif col == "unit" %}واحد
+                        {% elif col == "table_number" or col == "number" %}شماره میز
+                        {% elif col == "capacity" %}ظرفیت
+                        {% elif col == "status" %}وضعیت سفارش
+                        {% elif col == "branch" %}شعبه
+                        {% elif col == "ingredient" %}ماده اولیه
+                        {% elif col == "menu_item" %}نام غذا
+                        {% elif col == "minimum_stock" %}حداقل موجودی
+                        {% elif col == "created_at" %}تاریخ ایجاد
+                        {% elif col == "updated_at" %}آخرین ویرایش
+                        {% else %}{{ col|capfirst }}
+                        {% endif %}
+                    </th>
+                    {% endfor %}
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in objects %}
+                <tr>
+                    {% for col in columns %}
+                    <td>
+                        {% if col == "is_active" or col == "is_available" %}
+                            {% if obj.is_active or obj.is_available %}
+                                <span class="badge badge-green">فعال</span>
+                            {% else %}
+                                <span class="badge badge-gray">غیرفعال</span>
+                            {% endif %}
+                        {% elif col == "price" %}
+                            {{ obj.price }}
+                        {% elif col == "instructions" %}
+                            {{ obj.instructions|default:"—"|truncatechars:70 }}
+                        {% else %}
+                            {{ obj|field_value:col|default:"—" }}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                    <td>
+                        <div class="actions">
+                            {% if detail_namespace %}
+                                <a class="action-link" href="{% url detail_namespace obj.pk %}">⌕ مشاهده</a>
+                            {% endif %}
+                            {% if edit_namespace %}
+                                <a class="action-link" href="{% url edit_namespace obj.pk %}">✎ ویرایش</a>
+                            {% endif %}
+                            {% if delete_namespace %}
+                                <a class="action-link danger-text" href="{% url delete_namespace obj.pk %}">⌫ حذف</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="10" class="empty">اطلاعاتی ثبت نشده است.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
 </body>
 </html>
